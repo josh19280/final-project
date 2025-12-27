@@ -13,53 +13,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️取得 repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️編譯 encoder 和 decoder
       - name: Compile encoder and decoder
         run: |
           gcc -o encoder encoder.c -lm
           gcc -o decoder decoder.c -lm
 
-      # 3️執行 encoder method 0
       - name: Run encoder method 0
         run: |
           ./encoder 0 Kimberly.bmp R.txt G.txt B.txt dim.txt
 
-      # 4️執行 decoder method 0
       - name: Run decoder method 0
         run: |
           ./decoder 0 ResKimberly.bmp R.txt G.txt B.txt dim.txt
 
-      # 5️執行 encoder method 1
       - name: Run encoder method 1
         run: |
           ./encoder 1 Kimberly.bmp Qt_Y.txt Qt_Cb.txt Qt_Cr.txt dim.txt qF_Y.raw qF_Cb.raw qF_Cr.raw eF_Y.raw eF_Cb.raw eF_Cr.raw
 
-      # 6️執行 decoder method 1(b)
       - name: Run decoder method 1b
         run: |
           ./decoder 1 QResKimberly.bmp Kimberly.bmp Qt_Y.txt Qt_Cb.txt Qt_Cr.txt dim.txt qF_Y.raw qF_Cb.raw qF_Cr.raw eF_Y.raw eF_Cb.raw eF_Cr.raw
 
-      # 7️比對 BMP
       - name: Compare decoded BMP
         run: |
           cmp ResKimberly.bmp Kimberly.bmp || echo "Method 0 decoded BMP differs"
           cmp QResKimberly.bmp Kimberly.bmp || echo "Method 1 decoded BMP differs"
 
-      # 8️上傳 artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: decoded-and-encoded-files
+          name: decoded-and-encoded-BMPs
           path: |
             ResKimberly.bmp
             QResKimberly.bmp
-            qF_Y.raw
-            qF_Cb.raw
-            qF_Cr.raw
-            eF_Y.raw
-            eF_Cb.raw
-            eF_Cr.raw
