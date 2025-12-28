@@ -79,22 +79,22 @@ jobs:
       # 1️3️比對 Method 1a 的結果
       - name: Compare Method 1a result
         run: |
-           cmp ResKimberly1a.bmp Kimberly.bmp || echo "Method 1a decoded BMP differs"
+           cmp QResKimberly1.bmp Kimberly.bmp || echo "Method 1a decoded BMP differs"
 
       # 1️4️比對 Method 1b 的結果
       - name: Compare Method 1b result
         run: |
-          cmp ResKimberly1b.bmp Kimberly.bmp || echo "Method 1b decoded BMP differs"
+          cmp ResKimberly1.bmp Kimberly.bmp || echo "Method 1b decoded BMP differs"
 
       # 1️5️比對 Method 2a 的結果
       - name: Compare Method 2a result
         run: |
-          cmp ResKimberly2a.bmp Kimberly.bmp || echo "Method 2a decoded BMP differs"
+          cmp QResKimberly2a.bmp Kimberly.bmp || echo "Method 2a decoded BMP differs"
 
       # 1️6️比對 Method 2b 的結果
       - name: Compare Method 2b result
         run: |
-          cmp ResKimberly2b.bmp Kimberly.bmp || echo "Method 2b decoded BMP differs"
+          cmp QResKimberly2b.bmp Kimberly.bmp || echo "Method 2b decoded BMP differs"
 
       # 1️87上傳 artifacts
       - name: Upload artifacts
