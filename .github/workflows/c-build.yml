@@ -13,59 +13,104 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️ 取得 repository
+      # 1️取得 repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️ 編譯 encoder 和 decoder
+      # 2️編譯 encoder 和 decoder
       - name: Compile encoder and decoder
         run: |
           gcc -o encoder encoder.c -lm
           gcc -o decoder decoder.c -lm
 
-      # 3️ 執行 encoder method 0
+      # 3️執行 encoder method 0
       - name: Run encoder method 0
         run: |
           ./encoder 0 Kimberly.bmp R.txt G.txt B.txt dim.txt
 
-      # 4️ 執行 decoder method 0
+      # 4️執行 decoder method 0
       - name: Run decoder method 0
         run: |
-          ./decoder 0 ResKimberly.bmp R.txt G.txt B.txt dim.txt
+          ./decoder 0 ResKimberly0.bmp R.txt G.txt B.txt dim.txt
 
-      # 5️ 執行 encoder method 1
+      # 5️執行 encoder method 1
       - name: Run encoder method 1
         run: |
           ./encoder 1 Kimberly.bmp Qt_Y.txt Qt_Cb.txt Qt_Cr.txt dim.txt \
                     qF_Y.raw qF_Cb.raw qF_Cr.raw eF_Y.raw eF_Cb.raw eF_Cr.raw
 
-      # 6️ 執行 decoder method 1(a)
+      # 6️執行 decoder method 1(a) - 只用量化係數
       - name: Run decoder method 1a
         run: |
-          ./decoder 1 QResKimberly.bmp Kimberly.bmp Qt_Y.txt Qt_Cb.txt Qt_Cr.txt \
+          ./decoder 1 QResKimberly1.bmp Kimberly.bmp Qt_Y.txt Qt_Cb.txt Qt_Cr.txt \
                     dim.txt qF_Y.raw qF_Cb.raw qF_Cr.raw
 
-      # 7️ 執行 decoder method 1(b)
+      # 7️執行 decoder method 1(b) - 量化係數 + 誤差
       - name: Run decoder method 1b
         run: |
-          ./decoder 1 ResKimberly.bmp Qt_Y.txt Qt_Cb.txt Qt_Cr.txt dim.txt \
+          ./decoder 1 ResKimberly1.bmp Qt_Y.txt Qt_Cb.txt Qt_Cr.txt dim.txt \
                     qF_Y.raw qF_Cb.raw qF_Cr.raw eF_Y.raw eF_Cb.raw eF_Cr.raw
 
-      # 8️ 比對 BMP
-      - name: Compare decoded BMP
+      # 8️執行 encoder method 2(a) - ASCII format
+      - name: Run encoder method 2a (ASCII)
         run: |
-          cmp ResKimberly.bmp Kimberly.bmp || echo "Method 0 decoded BMP differs"
-          cmp QResKimberly.bmp Kimberly.bmp || echo "Method 1a decoded BMP differs"
-          cmp ResKimberly.bmp Kimberly.bmp || echo "Method 1b decoded BMP differs"
+          ./encoder 2 Kimberly.bmp ascii rle_code.txt
 
-      # 9️ 上傳 artifacts
+      # 9️執行 decoder method 2(a) - ASCII format
+      - name: Run decoder method 2a (ASCII)
+        run: |
+          ./decoder 2 QResKimberly2a.bmp ascii rle_code.txt
+
+      # 執行 encoder method 2(b) - Binary format
+      - name: Run encoder method 2b (Binary)
+        run: |
+          ./encoder 2 Kimberly.bmp binary rle_code.bin
+
+      # 1️1️執行 decoder method 2(b) - Binary format
+      - name: Run decoder method 2b (Binary)
+        run: |
+          ./decoder 2 QResKimberly2b.bmp binary rle_code.bin
+
+      # 1️2️比對 Method 0 的結果
+      - name: Compare Method 0 result
+        run: |
+          cmp ResKimberly0.bmp Kimberly.bmp || echo "Method 0 decoded BMP differs"
+
+      # 1️3️比對 Method 1a 的結果
+      - name: Compare Method 1a result
+        run: |
+           cmp ResKimberly1a.bmp Kimberly.bmp || echo "Method 1a decoded BMP differs"
+
+      # 1️4️比對 Method 1b 的結果
+      - name: Compare Method 1b result
+        run: |
+          cmp ResKimberly1b.bmp Kimberly.bmp || echo "Method 1b decoded BMP differs"
+
+      # 1️5️比對 Method 2a 的結果
+      - name: Compare Method 2a result
+        run: |
+          cmp ResKimberly2a.bmp Kimberly.bmp || echo "Method 2a decoded BMP differs"
+
+      # 1️6️比對 Method 2b 的結果
+      - name: Compare Method 2b result
+        run: |
+          cmp ResKimberly2b.bmp Kimberly.bmp || echo "Method 2b decoded BMP differs"
+
+      # 1️87上傳 artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: decoded-and-encoded-files
           path: |
-            ResKimberly.bmp
-            QResKimberly.bmp
+            ResKimberly0.bmp
+            ResKimberly1.bmp
+            QResKimberly1.bmp
+            QResKimberly2a.bmp
+            QResKimberly2b.bmp
+            R.txt
+            G.txt
+            B.txt
+            dim.txt
             Qt_Y.txt
             Qt_Cb.txt
             Qt_Cr.txt
@@ -75,3 +120,5 @@ jobs:
             eF_Y.raw
             eF_Cb.raw
             eF_Cr.raw
+            rle_code.txt
+            rle_code.bin
